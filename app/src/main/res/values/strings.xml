@@ -10,4 +10,5 @@
     <string name="password_hit_string">Your password</string>
   <string name="login_string">Login</string>
   <string name="about_string">About</string>
+  <string name="exit_again">Press again to exit the program</string>
 </resources>

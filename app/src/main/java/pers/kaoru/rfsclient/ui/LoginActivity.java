@@ -1,14 +1,21 @@
 package pers.kaoru.rfsclient.ui;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.IOException;
+
 import pers.kaoru.rfsclient.R;
+import pers.kaoru.rfsclient.core.ClientUtils;
+import pers.kaoru.rfsclient.core.Response;
+import pers.kaoru.rfsclient.core.ResponseCode;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -30,22 +37,64 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.loginButton);
 
         loginButton.setOnClickListener(view -> onLogin());
+
+        // 测试用
+        setHost("192.168.3.2");
+        setPort(8080);
+        setName("root");
+        setPassword("123");
     }
 
     private void onLogin() {
+        String host = getHost();
+        int port = getPort();
+        String name = getName();
+        String pwdStr = getPassword();
+
+        if (host.isEmpty()
+                || port < 1025
+                || port > 65535
+                || name.isEmpty()
+                || pwdStr.isEmpty()) {
+            return;
+        }
+
         setAllEnabled(false);
 
-        new AsyncTask<Void,Void,Boolean>(){
+        new AsyncTask<Void, Void, Response>() {
             @Override
-            protected Boolean doInBackground(Void... voids) {
-                return null;
+            protected Response doInBackground(Void... voids) {
+                Response response = null;
+                try {
+                    response = ClientUtils.Verify(host, port, name, pwdStr);
+                } catch (IOException exception) {
+                    return null;
+                }
+                return response;
             }
 
             @Override
-            protected void onPostExecute(Boolean aBoolean) {
+            protected void onPostExecute(Response response) {
+                if (response == null) {
+                    setAllEnabled(true);
+                    return;
+                }
+
+                if (response.getCode() == ResponseCode.OK) {
+//                    Toast.makeText(LoginActivity.this, "Login success", Toast.LENGTH_LONG).show();
+                    setAllEnabled(true);
+                    Intent intent = new Intent(LoginActivity.this, ViewActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("host", host);
+                    bundle.putInt("port", port);
+                    bundle.putString("token", response.getHeader("token"));
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
                 setAllEnabled(true);
             }
         }.execute();
+
     }
 
     private String getHost() {
@@ -57,7 +106,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private int getPort() {
-        return Integer.parseInt(portTextBox.getText().toString());
+        String portStr = portTextBox.getText().toString();
+        if(portStr.isEmpty()){
+            return 0;
+        }
+        return Integer.parseInt(portStr);
     }
 
     private void setPort(int port) {
