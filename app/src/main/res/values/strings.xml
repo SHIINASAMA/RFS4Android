@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">RFS Client</string>
+    <string name="host_string">Host</string>
+    <string name="port_string">Port</string>
+    <string name="username_string">Name</string>
+    <string name="password_string">PWD</string>
+  <string name="host_hit_string" translatable="false">localhost, 192.168.1.1</string>
+    <string name="port_hit_string" translatable="false">1025 - 65535</string>
+    <string name="username_hit_string">admin</string>
+    <string name="password_hit_string">Your password</string>
+  <string name="login_string">Login</string>
+  <string name="about_string">About</string>
 </resources>
