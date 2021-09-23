@@ -1,138 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
   android:layout_width="match_parent"
-  android:layout_height="match_parent">
+  android:layout_height="wrap_content"
+  android:layout_gravity="center_vertical"
+  android:orientation="vertical">
 
-  <!-- Center -->
+  <!-- Host -->
   <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center_vertical"
-    android:orientation="vertical">
-
-    <!-- Host -->
-    <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="48dp"
-      android:layout_marginLeft="20dp"
-      android:layout_marginRight="20dp">
-
-      <TextView
-        android:layout_width="70dp"
-        android:layout_height="wrap_content"
-        android:text="@string/host_string"
-        android:textSize="24sp" />
-
-      <EditText
-        android:id="@+id/hostTextBox"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:hint="@string/host_hit_string"
-        android:inputType="text"
-        android:singleLine="true" />
-    </LinearLayout>
-
-    <!-- Port -->
-    <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="48dp"
-      android:layout_marginLeft="20dp"
-      android:layout_marginRight="20dp">
-
-      <TextView
-        android:layout_width="70dp"
-        android:layout_height="wrap_content"
-        android:text="@string/port_string"
-        android:textSize="24sp" />
-
-      <EditText
-        android:id="@+id/portTextBox"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:hint="@string/port_hit_string"
-        android:inputType="number"
-        android:maxLength="6"
-        android:singleLine="true" />
-
-    </LinearLayout>
-
-    <!-- User Name -->
-    <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="48dp"
-      android:layout_marginLeft="20dp"
-      android:layout_marginRight="20dp"
-      android:singleLine="true">
-
-      <TextView
-        android:layout_width="70dp"
-        android:layout_height="wrap_content"
-        android:text="@string/username_string"
-        android:textSize="24sp" />
-
-      <EditText
-        android:id="@+id/nameTextBox"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:hint="@string/username_hit_string"
-        android:inputType="text" />
-
-    </LinearLayout>
-
-    <!-- Password -->
-    <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="48dp"
-      android:layout_marginLeft="20dp"
-      android:layout_marginRight="20dp">
-
-      <TextView
-        android:layout_width="70dp"
-        android:layout_height="wrap_content"
-        android:text="@string/password_string"
-        android:textSize="24sp" />
-
-      <EditText
-        android:id="@+id/pwdTextBox"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:hint="@string/password_hit_string"
-        android:inputType="textPassword"
-        android:singleLine="true" />
-
-    </LinearLayout>
-
-    <!-- Login Button -->
-    <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="48dp"
-      android:layout_marginTop="40dp"
-      android:gravity="center">
-
-      <Button
-        android:id="@+id/loginButton"
-        android:layout_width="200dp"
-        android:layout_height="match_parent"
-        android:text="@string/login_string" />
-
-    </LinearLayout>
-
-  </LinearLayout>
-
-  <!-- Bottom -->
-  <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    android:orientation="vertical">
+    android:layout_height="48dp"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp">
 
     <TextView
-      android:layout_width="wrap_content"
+      android:layout_width="70dp"
+      android:layout_height="wrap_content"
+      android:text="@string/host_string"
+      android:textSize="24sp" />
+
+    <EditText
+      android:id="@+id/hostTextBox"
+      android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:layout_gravity="center"
-      android:text="@string/about_string"
-      android:textSize="20sp" />
+      android:hint="@string/host_hit_string"
+      android:inputType="text"
+      android:singleLine="true" />
+  </LinearLayout>
+
+  <!-- Port -->
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp">
+
+    <TextView
+      android:layout_width="70dp"
+      android:layout_height="wrap_content"
+      android:text="@string/port_string"
+      android:textSize="24sp" />
+
+    <EditText
+      android:id="@+id/portTextBox"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:hint="@string/port_hit_string"
+      android:inputType="number"
+      android:maxLength="6"
+      android:singleLine="true" />
 
   </LinearLayout>
 
-</FrameLayout>
+  <!-- User Name -->
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp"
+    android:singleLine="true">
+
+    <TextView
+      android:layout_width="70dp"
+      android:layout_height="wrap_content"
+      android:text="@string/username_string"
+      android:textSize="24sp" />
+
+    <EditText
+      android:id="@+id/nameTextBox"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:hint="@string/username_hit_string"
+      android:inputType="text" />
+
+  </LinearLayout>
+
+  <!-- Password -->
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp">
+
+    <TextView
+      android:layout_width="70dp"
+      android:layout_height="wrap_content"
+      android:text="@string/password_string"
+      android:textSize="24sp" />
+
+    <EditText
+      android:id="@+id/pwdTextBox"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:hint="@string/password_hit_string"
+      android:inputType="textPassword"
+      android:singleLine="true" />
+
+  </LinearLayout>
+
+  <!-- Login Button -->
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_marginTop="40dp"
+    android:gravity="center">
+
+    <Button
+      android:id="@+id/loginButton"
+      android:layout_width="200dp"
+      android:layout_height="match_parent"
+      android:text="@string/login_string" />
+
+  </LinearLayout>
+
+</LinearLayout>

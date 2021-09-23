@@ -21,7 +21,7 @@
       </intent-filter>
     </activity>
     <activity android:name=".ui.ViewActivity"/>
-
+    <activity android:name=".ui.AboutActivity"/>
   </application>
 
 </manifest>

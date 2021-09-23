@@ -2,7 +2,6 @@ package pers.kaoru.rfsclient.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +12,10 @@ import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 
-import java.text.DateFormat;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -77,5 +78,45 @@ public class FileListAdapter extends BaseAdapter {
 
     public void reset(List<FileInfo> fileInfoList) {
         this.fileInfoList = fileInfoList;
+        sort();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void sortHighVersion() {
+        fileInfoList.sort((fileInfo, t1) -> {
+            int v = -fileInfo.isDirectory().compareTo(t1.isDirectory());
+            if (v == 0) {
+                return fileInfo.getName().compareTo(t1.getName());
+            } else {
+                return v;
+            }
+        });
+    }
+
+    public void sortBaseVersion() {
+        Collections.sort(fileInfoList, (fileInfo, t1) -> {
+            int v = -fileInfo.isDirectory().compareTo(t1.isDirectory());
+            if (v == 0) {
+                return fileInfo.getName().compareTo(t1.getName());
+            } else {
+                return v;
+            }
+        });
+    }
+
+    private void sort(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            sortHighVersion();
+        } else {
+            sortBaseVersion();
+        }
+    }
+
+    private void remove(int index) {
+        fileInfoList.remove(index);
+    }
+
+    private void add(FileInfo info) {
+        fileInfoList.add(info);
     }
 }

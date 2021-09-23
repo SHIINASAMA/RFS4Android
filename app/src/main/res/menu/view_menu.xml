@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <item
+    android:id="@+id/newMenu"
+    android:title="@string/new_dir_string" />
+
+  <item
+    android:id="@+id/uploadMenu"
+    android:title="@string/upload_string" />
+
+  <item
+    android:id="@+id/taskMenu"
+    android:title="@string/task_view_string" />
+
+</menu>

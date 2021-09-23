@@ -10,5 +10,24 @@
     <string name="password_hit_string">Your password</string>
   <string name="login_string">Login</string>
   <string name="about_string">About</string>
-  <string name="exit_again">Press again to exit the program</string>
+  <string name="exit_again_string">Press again to logout</string>
+  <string name="new_dir_string">new directory</string>
+  <string name="rename_string">rename</string>
+  <string name="move_string">move to ...</string>
+  <string name="copy_string">copy to ...</string>
+  <string name="remove_string">remove</string>
+  <string name="unknown_error_string">unknow error</string>
+  <string name="input_new_name_string">input a new name</string>
+  <string name="yes_string">yes</string>
+  <string name="cancel_string">cancel</string>
+  <string name="net_error_string">net connect error</string>
+  <string name="illegal_name_string">illegal name</string>
+  <string name="confirm_remove_string">are you sure remove this file/directory?</string>
+  <string name="ask_string">ask</string>
+  <string name="website_string"><a href="https://github.com/SHIINASAMA/RFS4Android">repository</a></string>
+  <string name="developer_string"><a href="https://github.com/SHIINASAMA" />developer</string>
+  <string name="unknown_version_string">unknown version</string>
+  <string name="download_string">download</string>
+  <string name="upload_string">upload</string>
+  <string name="task_view_string">task view</string>
 </resources>

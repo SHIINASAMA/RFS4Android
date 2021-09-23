@@ -3,10 +3,14 @@ package pers.kaoru.rfsclient.ui;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -45,6 +49,20 @@ public class LoginActivity extends AppCompatActivity {
         setPassword("123");
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = new MenuInflater(LoginActivity.this);
+        inflater.inflate(R.menu.login_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Intent intent = new Intent(this, AboutActivity.class);
+        startActivity(intent);
+        return true;
+    }
+
     private void onLogin() {
         String host = getHost();
         int port = getPort();
@@ -77,11 +95,11 @@ public class LoginActivity extends AppCompatActivity {
             protected void onPostExecute(Response response) {
                 if (response == null) {
                     setAllEnabled(true);
+                    Toast.makeText(LoginActivity.this, R.string.net_error_string, Toast.LENGTH_LONG).show();
                     return;
                 }
 
                 if (response.getCode() == ResponseCode.OK) {
-//                    Toast.makeText(LoginActivity.this, "Login success", Toast.LENGTH_LONG).show();
                     setAllEnabled(true);
                     Intent intent = new Intent(LoginActivity.this, ViewActivity.class);
                     Bundle bundle = new Bundle();
@@ -90,6 +108,9 @@ public class LoginActivity extends AppCompatActivity {
                     bundle.putString("token", response.getHeader("token"));
                     intent.putExtras(bundle);
                     startActivity(intent);
+                }
+                else{
+                    Toast.makeText(LoginActivity.this, response.getHeader("error"), Toast.LENGTH_LONG).show();
                 }
                 setAllEnabled(true);
             }
@@ -107,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private int getPort() {
         String portStr = portTextBox.getText().toString();
-        if(portStr.isEmpty()){
+        if (portStr.isEmpty()) {
             return 0;
         }
         return Integer.parseInt(portStr);

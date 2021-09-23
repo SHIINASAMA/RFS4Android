@@ -9,5 +9,24 @@
   <string name="password_hit_string">用户密码</string>
   <string name="login_string">登录</string>
   <string name="about_string">关于</string>
-  <string name="exit_again">再按一次退出程序</string>
+  <string name="exit_again_string">再按一次退出登录</string>
+  <string name="new_dir_string">新建文件夹</string>
+  <string name="rename_string">重命名</string>
+  <string name="move_string">移动至...</string>
+  <string name="copy_string">复制至...</string>
+  <string name="remove_string">删除</string>
+  <string name="unknown_error_string">未知错误</string>
+  <string name="input_new_name_string">输入新的名称</string>
+  <string name="yes_string">确定</string>
+  <string name="cancel_string">取消</string>
+  <string name="net_error_string">网络连接错误</string>
+  <string name="illegal_name_string">非法名称</string>
+  <string name="confirm_remove_string">你确定要删除这个文件/文件夹吗？</string>
+  <string name="ask_string">询问</string>
+  <string name="website_string"><a href="https://github.com/SHIINASAMA/RFS4Android">仓库</a></string>
+  <string name="developer_string"><a href="https://github.com/SHIINASAMA">开发者</a></string>
+  <string name="unknown_version_string">未知版本</string>
+  <string name="download_string">下载</string>
+  <string name="upload_string">上传</string>
+  <string name="task_view_string">任务视图</string>
 </resources>
