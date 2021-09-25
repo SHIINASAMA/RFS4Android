@@ -29,4 +29,8 @@
   <string name="download_string">下载</string>
   <string name="upload_string">上传</string>
   <string name="task_view_string">任务视图</string>
+  <string name="select_string">选择</string>
+  <string name="select_move_location_string">移动至...</string>
+  <string name="select_copy_location_string">复制至...</string>
+  <string name="select_location_string">选择位置</string>
 </resources>

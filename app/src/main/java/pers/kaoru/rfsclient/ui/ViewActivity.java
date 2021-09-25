@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -33,6 +34,9 @@ import pers.kaoru.rfsclient.core.ResponseCode;
 import pers.kaoru.rfsclient.core.Router;
 
 public class ViewActivity extends AppCompatActivity {
+
+    public static final int REQUEST_CODE_MOVE = 100;
+    public static final int REQUEST_CODE_COPY = 200;
 
     private String host;
     private int port;
@@ -217,6 +221,26 @@ public class ViewActivity extends AppCompatActivity {
                     confirmDialog.show();
                     break;
                 }
+                case R.id.moveMenu: {
+                    Intent intent = new Intent(ViewActivity.this, SelectActivity.class);
+                    intent.putExtra("host", host);
+                    intent.putExtra("port", port);
+                    intent.putExtra("token", token);
+                    intent.putExtra("name", info.getName());
+                    intent.putExtra("title", R.string.select_move_location_string);
+                    startActivityForResult(intent, REQUEST_CODE_MOVE);
+                    break;
+                }
+                case R.id.copyMenu: {
+                    Intent intent = new Intent(ViewActivity.this, SelectActivity.class);
+                    intent.putExtra("host", host);
+                    intent.putExtra("port", port);
+                    intent.putExtra("token", token);
+                    intent.putExtra("name", info.getName());
+                    intent.putExtra("title", R.string.select_copy_location_string);
+                    startActivityForResult(intent, REQUEST_CODE_COPY);
+                    break;
+                }
                 default:
                     Toast.makeText(this, R.string.unknown_error_string, Toast.LENGTH_SHORT);
                     break;
@@ -225,6 +249,73 @@ public class ViewActivity extends AppCompatActivity {
         });
         popupMenu.show();
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_MOVE && resultCode == RESULT_OK) {
+            assert data != null;
+            String name = data.getStringExtra("name");
+            String des = data.getStringExtra("des") + name;
+            String src = router + name;
+
+            new AsyncTask<Void, Void, Response>() {
+                @Override
+                protected Response doInBackground(Void... voids) {
+                    try {
+                        return ClientUtils.Move(host, port, src, des, token);
+                    } catch (IOException exception) {
+                        exception.printStackTrace();
+                        return null;
+                    }
+                }
+
+                @Override
+                protected void onPostExecute(Response response) {
+                    if (response == null) {
+                        Toast.makeText(ViewActivity.this, R.string.net_error_string, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (response.getCode() == ResponseCode.OK) {
+                        refresh(false, "/");
+                    } else {
+                        Toast.makeText(ViewActivity.this, response.getHeader("error"), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }.execute();
+        } else if (requestCode == REQUEST_CODE_COPY && resultCode == RESULT_OK) {
+            assert data != null;
+            String name = data.getStringExtra("name");
+            String des = data.getStringExtra("des") + name;
+            String src = router + name;
+
+            new AsyncTask<Void, Void, Response>() {
+                @Override
+                protected Response doInBackground(Void... voids) {
+                    try {
+                        return ClientUtils.Copy(host, port, src, des, token);
+                    } catch (IOException exception) {
+                        exception.printStackTrace();
+                        return null;
+                    }
+                }
+
+                @Override
+                protected void onPostExecute(Response response) {
+                    if (response == null) {
+                        Toast.makeText(ViewActivity.this, R.string.net_error_string, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (response.getCode() == ResponseCode.OK) {
+                        refresh(false, "/");
+                    } else {
+                        Toast.makeText(ViewActivity.this, response.getHeader("error"), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }.execute();
+        }
     }
 
     @Override
