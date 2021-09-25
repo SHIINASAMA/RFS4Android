@@ -56,8 +56,6 @@ public class ViewActivity extends AppCompatActivity {
         port = intent.getIntExtra("port", 0);
         token = intent.getStringExtra("token");
 
-
-
         pathText = findViewById(R.id.pathText);
 
         fileListAdapter = new FileListAdapter(this, new LinkedList<>());
@@ -69,10 +67,63 @@ public class ViewActivity extends AppCompatActivity {
         refresh(false, "/");
     }
 
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = new MenuInflater(ViewActivity.this);
         inflater.inflate(R.menu.view_menu, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.newMenu: {
+                EditText nameText = new EditText(ViewActivity.this);
+                AlertDialog.Builder inputDialog = new AlertDialog.Builder(ViewActivity.this);
+                inputDialog.setTitle(R.string.new_dir_string);
+                inputDialog.setView(nameText);
+                inputDialog.setPositiveButton(R.string.yes_string, (dialogInterface, i1) -> {
+                    String newName = nameText.getText().toString();
+                    char[] chars = {'\"', '*', '?', '<', '>', '|'};
+                    for (char c : chars) {
+                        if (newName.indexOf(c) != -1) {
+                            Toast.makeText(ViewActivity.this, R.string.illegal_name_string, Toast.LENGTH_SHORT);
+                            return;
+                        }
+                    }
+
+                    new AsyncTask<Void, Void, Response>() {
+                        @Override
+                        protected Response doInBackground(Void... voids) {
+                            try {
+                                return ClientUtils.MakeDirectory(host, port, router + newName, token);
+                            } catch (IOException exception) {
+                                exception.printStackTrace();
+                                return null;
+                            }
+                        }
+
+                        @Override
+                        protected void onPostExecute(Response response) {
+                            if (response == null) {
+                                Toast.makeText(ViewActivity.this, R.string.net_error_string, Toast.LENGTH_SHORT);
+                                return;
+                            }
+                            if (response.getCode() == ResponseCode.OK) {
+                                refresh(false, "/");
+                            } else {
+                                Toast.makeText(ViewActivity.this, response.getHeader("error"), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }.execute();
+                });
+                inputDialog.show();
+                break;
+            }
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void onListItemClick(AdapterView<?> parent, View view, long i, long l) {
@@ -152,7 +203,7 @@ public class ViewActivity extends AppCompatActivity {
                             @Override
                             protected void onPostExecute(Response response) {
                                 if (response == null) {
-                                    Toast.makeText(ViewActivity.this, R.string.net_error_string,Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(ViewActivity.this, R.string.net_error_string, Toast.LENGTH_SHORT).show();
                                     return;
                                 }
                                 if (response.getCode() == ResponseCode.OK) {
@@ -247,9 +298,5 @@ public class ViewActivity extends AppCompatActivity {
 
     private void onward(String subName) {
         refresh(false, subName);
-    }
-
-    private void remove(int index) {
-
     }
 }
