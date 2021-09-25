@@ -101,7 +101,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 if (response.getCode() == ResponseCode.OK) {
-                    setAllEnabled(true);
                     Intent intent = new Intent(LoginActivity.this, ViewActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putString("host", host);
@@ -113,10 +112,9 @@ public class LoginActivity extends AppCompatActivity {
                 else{
                     Toast.makeText(LoginActivity.this, response.getHeader("error"), Toast.LENGTH_LONG).show();
                 }
-                setAllEnabled(true);
             }
         }.execute();
-
+        setAllEnabled(true);
     }
 
     private String getHost() {
