@@ -15,10 +15,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.io.IOException;
 import java.util.LinkedList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import pers.kaoru.rfsclient.R;
 import pers.kaoru.rfsclient.core.ClientUtils;
 import pers.kaoru.rfsclient.core.FileInfo;
@@ -36,15 +40,24 @@ public class SelectActivity extends AppCompatActivity {
     private volatile boolean isRefresh = false;
     private final Router router = new Router();
 
-    private TextView pathText;
-    private ListView fileList;
+    @SuppressLint("NonConstantResourceId")
+    @BindView(R.id.selectSwipeRefresh)
+    SwipeRefreshLayout swipeRefreshLayout;
+    @SuppressLint("NonConstantResourceId")
+    @BindView(R.id.selectPathText)
+    TextView pathText;
+    @SuppressLint("NonConstantResourceId")
+    @BindView(R.id.selectFileList)
+    ListView fileList;
     private FileListAdapter fileListAdapter;
+
+    private Unbinder unbinder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_layout);
-
+        unbinder = ButterKnife.bind(this);
 
         Intent intent = getIntent();
         host = intent.getStringExtra("host");
@@ -53,13 +66,23 @@ public class SelectActivity extends AppCompatActivity {
         name = intent.getStringExtra("name");
         getSupportActionBar().setTitle(intent.getIntExtra("title", R.string.select_location_string));
 
-        pathText = findViewById(R.id.selectPathText);
         fileListAdapter = new FileListAdapter(this, new LinkedList<>());
-        fileList = findViewById(R.id.selectFileList);
         fileList.setAdapter(fileListAdapter);
         fileList.setOnItemClickListener(this::onListItemClick);
 
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            refresh(false, "/");
+        });
+
         refresh(false, "/");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (unbinder != null) {
+            unbinder.unbind();
+        }
     }
 
     @Override
@@ -110,6 +133,7 @@ public class SelectActivity extends AppCompatActivity {
             return;
         }
         isRefresh = true;
+        swipeRefreshLayout.setRefreshing(true);
 
         String path;
         if (isBack) {
@@ -150,6 +174,7 @@ public class SelectActivity extends AppCompatActivity {
                     fileListAdapter.notifyDataSetChanged();
                 }
                 isRefresh = false;
+                swipeRefreshLayout.setRefreshing(false);
             }
         }.execute();
     }

@@ -18,10 +18,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.io.IOException;
 import java.util.LinkedList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnItemClick;
+import butterknife.OnItemLongClick;
+import butterknife.Unbinder;
 import pers.kaoru.rfsclient.R;
 import pers.kaoru.rfsclient.core.ClientUtils;
 import pers.kaoru.rfsclient.core.FileInfo;
@@ -42,29 +48,47 @@ public class ViewActivity extends AppCompatActivity {
     private volatile boolean isRefresh = false;
     private long firstTime;
 
-    private TextView pathText;
-    private ListView fileList;
+
+    @SuppressLint("NonConstantResourceId")
+    @BindView(R.id.swipeRefresh)
+    SwipeRefreshLayout swipeRefreshLayout;
+    @SuppressLint("NonConstantResourceId")
+    @BindView(R.id.pathText)
+    TextView pathText;
+    @SuppressLint("NonConstantResourceId")
+    @BindView(R.id.fileList)
+    ListView fileList;
     private FileListAdapter fileListAdapter;
+
+    private Unbinder unbinder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_layout);
+        unbinder = ButterKnife.bind(this);
 
         Intent intent = getIntent();
         host = intent.getStringExtra("host");
         port = intent.getIntExtra("port", 0);
         token = intent.getStringExtra("token");
 
-        pathText = findViewById(R.id.pathText);
-
         fileListAdapter = new FileListAdapter(this, new LinkedList<>());
-        fileList = findViewById(R.id.fileList);
         fileList.setAdapter(fileListAdapter);
-        fileList.setOnItemClickListener(this::onListItemClick);
-        fileList.setOnItemLongClickListener(this::onListItemLongClick);
+
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            refresh(false, "/");
+        });
 
         refresh(false, "/");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (unbinder != null) {
+            unbinder.unbind();
+        }
     }
 
     @Override
@@ -126,16 +150,19 @@ public class ViewActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void onListItemClick(AdapterView<?> parent, View view, long i, long l) {
-        FileInfo info = (FileInfo) fileListAdapter.getItem((int) i);
+    @SuppressLint("NonConstantResourceId")
+    @OnItemClick(R.id.fileList)
+    public void onListItemClick(AdapterView<?> parent, View view, int i, long l) {
+        FileInfo info = (FileInfo) fileListAdapter.getItem(i);
         if (info.isDirectory()) {
             onward(info.getName());
         }
     }
 
     @SuppressLint({"ShowToast", "NonConstantResourceId"})
-    private boolean onListItemLongClick(AdapterView<?> parent, View view, long i, long l) {
-        FileInfo info = (FileInfo) fileListAdapter.getItem((int) i);
+    @OnItemLongClick(R.id.fileList)
+    public boolean onListItemLongClick(AdapterView<?> parent, View view, int i, long l) {
+        FileInfo info = (FileInfo) fileListAdapter.getItem(i);
         PopupMenu popupMenu = new PopupMenu(ViewActivity.this, view);
         popupMenu.inflate(R.menu.file_menu);
         popupMenu.setOnMenuItemClickListener((item) -> {
@@ -333,6 +360,7 @@ public class ViewActivity extends AppCompatActivity {
             return;
         }
         isRefresh = true;
+        swipeRefreshLayout.setRefreshing(true);
 
         String path;
         if (isBack) {
@@ -373,6 +401,7 @@ public class ViewActivity extends AppCompatActivity {
                     fileListAdapter.notifyDataSetChanged();
                 }
                 isRefresh = false;
+                swipeRefreshLayout.setRefreshing(false);
             }
         }.execute();
     }

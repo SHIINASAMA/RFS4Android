@@ -1,5 +1,6 @@
 package pers.kaoru.rfsclient.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,6 +18,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
 
+import butterknife.BindView;
+import butterknife.BindViews;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Optional;
+import butterknife.Unbinder;
 import pers.kaoru.rfsclient.R;
 import pers.kaoru.rfsclient.core.ClientUtils;
 import pers.kaoru.rfsclient.core.Response;
@@ -24,30 +31,43 @@ import pers.kaoru.rfsclient.core.ResponseCode;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText hostTextBox;
-    private EditText portTextBox;
-    private EditText nameTextBox;
-    private EditText pwdTextBox;
-    private Button loginButton;
+    @SuppressLint("NonConstantResourceId")
+    @BindView(R.id.hostTextBox)
+    EditText hostTextBox;
+    @SuppressLint("NonConstantResourceId")
+    @BindView(R.id.portTextBox)
+    EditText portTextBox;
+    @SuppressLint("NonConstantResourceId")
+    @BindView(R.id.nameTextBox)
+    EditText nameTextBox;
+    @SuppressLint("NonConstantResourceId")
+    @BindView(R.id.pwdTextBox)
+    EditText pwdTextBox;
+    @SuppressLint("NonConstantResourceId")
+    @BindView(R.id.loginButton)
+    Button loginButton;
+
+    private Unbinder unbinder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_layout);
-
-        hostTextBox = findViewById(R.id.hostTextBox);
-        portTextBox = findViewById(R.id.portTextBox);
-        nameTextBox = findViewById(R.id.nameTextBox);
-        pwdTextBox = findViewById(R.id.pwdTextBox);
-        loginButton = findViewById(R.id.loginButton);
-
-        loginButton.setOnClickListener(view -> onLogin());
+        unbinder = ButterKnife.bind(this);
 
         // 测试用
         setHost("192.168.3.2");
         setPort(8080);
         setName("root");
         setPassword("123");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (unbinder != null) {
+            unbinder.unbind();
+        }
     }
 
     @Override
@@ -64,7 +84,8 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
-    private void onLogin() {
+    @OnClick(R.id.loginButton)
+    public void onLogin() {
         String host = getHost();
         int port = getPort();
         String name = getName();
@@ -108,8 +129,8 @@ public class LoginActivity extends AppCompatActivity {
                     bundle.putString("token", response.getHeader("token"));
                     intent.putExtras(bundle);
                     startActivity(intent);
-                }
-                else{
+                    finish();
+                } else {
                     Toast.makeText(LoginActivity.this, response.getHeader("error"), Toast.LENGTH_LONG).show();
                 }
             }

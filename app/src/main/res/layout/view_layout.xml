@@ -15,9 +15,16 @@
     android:singleLine="true"
     android:textSize="20sp" />
 
-  <ListView
-    android:id="@+id/fileList"
+  <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:id="@+id/swipeRefresh"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent">
+
+    <ListView
+      android:id="@+id/fileList"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
+  </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
 </LinearLayout>

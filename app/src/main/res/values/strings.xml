@@ -10,7 +10,7 @@
     <string name="password_hit_string">Your password</string>
   <string name="login_string">Login</string>
   <string name="about_string">About</string>
-  <string name="exit_again_string">Press again to logout</string>
+  <string name="exit_again_string">Press again to exit</string>
   <string name="new_dir_string">new directory</string>
   <string name="rename_string">rename</string>
   <string name="move_string">move to ...</string>
