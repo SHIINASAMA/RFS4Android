@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <group>
+    <item
+      android:id="@+id/taskPause"
+      android:title="@string/pause_string" />
+    <item
+      android:id="@+id/resumeTask"
+      android:title="@string/resume_string" />
+    <item
+      android:id="@+id/cancelTask"
+      android:title="@string/cancel_string" />
+  </group>
+  <group>
+    <item
+      android:id="@+id/pauseAllTask"
+      android:title="@string/pause_all_string" />
+    <item
+      android:id="@+id/resumeAllTask"
+      android:title="@string/resume_all_string" />
+    <item
+      android:id="@+id/cancelAllTask"
+      android:title="@string/cancel_all_string" />
+  </group>
+</menu>

@@ -1,9 +1,14 @@
 package pers.kaoru.rfsclient.ui;
 
+import static android.content.Intent.*;
+
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 
@@ -34,6 +40,11 @@ import pers.kaoru.rfsclient.core.FileInfo;
 import pers.kaoru.rfsclient.core.Response;
 import pers.kaoru.rfsclient.core.ResponseCode;
 import pers.kaoru.rfsclient.core.Router;
+import pers.kaoru.rfsclient.service.MyService;
+import pers.kaoru.rfsclient.service.Task;
+import pers.kaoru.rfsclient.service.TaskDispatcher;
+import pers.kaoru.rfsclient.service.TaskRecord;
+import pers.kaoru.rfsclient.service.TaskType;
 
 public class ViewActivity extends AppCompatActivity {
 
@@ -47,7 +58,6 @@ public class ViewActivity extends AppCompatActivity {
     private final Router router = new Router();
     private volatile boolean isRefresh = false;
     private long firstTime;
-
 
     @SuppressLint("NonConstantResourceId")
     @BindView(R.id.swipeRefresh)
@@ -81,11 +91,20 @@ public class ViewActivity extends AppCompatActivity {
         });
 
         refresh(false, "/");
+
+        Intent startIntent = new Intent(this, MyService.class);
+        startIntent.setAction(MyService.ACTION_INIT);
+        startIntent.putExtra("host", host);
+        startIntent.putExtra("port", port);
+        startIntent.putExtra("token", token);
+        startService(startIntent);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Intent stopIntent = new Intent(this, MyService.class);
+        stopService(stopIntent);
         if (unbinder != null) {
             unbinder.unbind();
         }
@@ -98,6 +117,7 @@ public class ViewActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -111,7 +131,7 @@ public class ViewActivity extends AppCompatActivity {
                     char[] chars = {'\"', '*', '?', '<', '>', '|'};
                     for (char c : chars) {
                         if (newName.indexOf(c) != -1) {
-                            Toast.makeText(ViewActivity.this, R.string.illegal_name_string, Toast.LENGTH_SHORT);
+                            Toast.makeText(ViewActivity.this, R.string.illegal_name_string, Toast.LENGTH_SHORT).show();
                             return;
                         }
                     }
@@ -142,6 +162,16 @@ public class ViewActivity extends AppCompatActivity {
                     }.execute();
                 });
                 inputDialog.show();
+                break;
+            }
+            case R.id.taskMenu: {
+                Intent intent = new Intent(this, TaskActivity.class);
+                startActivity(intent);
+                break;
+            }
+            case R.id.aboutMenu: {
+                Intent intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
                 break;
             }
             default:
@@ -262,6 +292,16 @@ public class ViewActivity extends AppCompatActivity {
                     intent.putExtra("name", info.getName());
                     intent.putExtra("title", R.string.select_copy_location_string);
                     startActivityForResult(intent, REQUEST_CODE_COPY);
+                    break;
+                }
+                case R.id.downloadMenu:{
+                    if(info.isDirectory()){
+                       break;
+                    }
+
+                    File file = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+                    TaskRecord record = new TaskRecord(host,port,token,router + info.getName(), file.getAbsolutePath(), TaskType.DOWNLOAD);
+                    TaskDispatcher.get().add(new Task(record));
                     break;
                 }
                 default:

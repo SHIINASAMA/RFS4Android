@@ -26,6 +26,9 @@
     <activity android:name=".ui.ViewActivity" />
     <activity android:name=".ui.AboutActivity" />
     <activity android:name=".ui.SelectActivity" />
+    <activity android:name=".ui.TaskActivity" />
+
+    <service android:name=".service.MyService" />
   </application>
 
 </manifest>

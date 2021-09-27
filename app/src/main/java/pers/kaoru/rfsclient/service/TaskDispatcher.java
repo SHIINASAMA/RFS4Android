@@ -9,14 +9,16 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import pers.kaoru.rfsclient.ui.TaskListAdapter;
+
 public class TaskDispatcher extends Thread {
 
     // 单例
     private static TaskDispatcher instance;
 
-    public static TaskDispatcher init(int maxTaskAmount, String host, int port, String token, TaskListener listener) {
+    public static TaskDispatcher init(int maxTaskAmount, TaskListener listener) {
         if (instance == null) {
-            instance = new TaskDispatcher(maxTaskAmount, host, port, token, listener);
+            instance = new TaskDispatcher(maxTaskAmount, listener);
         }
         return instance;
     }
@@ -29,12 +31,12 @@ public class TaskDispatcher extends Thread {
     private final Semaphore permit;
     private final ExecutorService executorService;
     private final HashMap<String, Task> taskHashMap = new HashMap<>();
-    private final TaskListener listener;
+    private TaskListener listener;
 
     private final BlockingQueue<Task> taskQueue = new LinkedBlockingQueue<>();
     private volatile boolean isQuit = false;
 
-    private TaskDispatcher(int maxTaskAmount, String host, int port, String token, TaskListener listener) {
+    private TaskDispatcher(int maxTaskAmount, TaskListener listener) {
         permit = new Semaphore(maxTaskAmount);
         executorService = new ThreadPoolExecutor(maxTaskAmount, maxTaskAmount, 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), r -> new Thread(r, "task_thread"));
         this.listener = listener;
@@ -69,6 +71,14 @@ public class TaskDispatcher extends Thread {
         return false;
     }
 
+    public void pauseAll() {
+        for (Task task : taskHashMap.values()) {
+            if (task.getState() == TaskState.RUNNING) {
+                task.setState(TaskState.PAUSED);
+            }
+        }
+    }
+
     public boolean cancel(String taskId) {
         Task task = taskHashMap.get(taskId);
         if (task != null) {
@@ -77,6 +87,14 @@ public class TaskDispatcher extends Thread {
             return true;
         }
         return false;
+    }
+
+    public void cancelAll() {
+        for (Task task : taskHashMap.values()) {
+            if (task.getState() == TaskState.RUNNING || task.getState() == TaskState.PAUSED) {
+                task.setState(TaskState.CANCELED);
+            }
+        }
     }
 
     public boolean resume(String taskId) {
@@ -90,6 +108,14 @@ public class TaskDispatcher extends Thread {
         return false;
     }
 
+    public void resumeAll() {
+        for (Task task : taskHashMap.values()) {
+            if (task.getState() == TaskState.PAUSED) {
+                task.setState(TaskState.RUNNING);
+            }
+        }
+    }
+
     @Override
     public void run() {
         while (!isInterrupted()) {
@@ -98,7 +124,7 @@ public class TaskDispatcher extends Thread {
                 getPermit().acquire();
                 start(task);
             } catch (InterruptedException exception) {
-                exception.printStackTrace();
+//                exception.printStackTrace();
                 if (isQuit) {
                     return;
                 }
@@ -106,10 +132,17 @@ public class TaskDispatcher extends Thread {
         }
     }
 
-    private void start(Task task){
+    private void start(Task task) {
         task.setState(TaskState.RUNNING);
         executorService.execute(task);
-        listener.onStart(task.getRecord());
+    }
+
+    public TaskState getState(String taskId) {
+        Task task = taskHashMap.get(taskId);
+        if (task != null) {
+            return task.getState();
+        }
+        return TaskState.FAILED;
     }
 
     // 任务回调
@@ -125,10 +158,6 @@ public class TaskDispatcher extends Thread {
         listener.onPaused(record);
     }
 
-    public void onStart(TaskRecord record) {
-        listener.onStart(record);
-    }
-
     public void onResume(TaskRecord record) {
         listener.onResume(record);
     }
@@ -141,7 +170,11 @@ public class TaskDispatcher extends Thread {
         listener.onCanceled(record);
     }
 
-    public Collection<Task> getTaskHashMap() {
+    public Collection<Task> getTasks() {
         return taskHashMap.values();
+    }
+
+    public void remove(String taskId) {
+        taskHashMap.remove(taskId);
     }
 }

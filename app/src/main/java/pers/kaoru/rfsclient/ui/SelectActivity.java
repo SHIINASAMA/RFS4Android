@@ -19,9 +19,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnItemClick;
 import butterknife.Unbinder;
 import pers.kaoru.rfsclient.R;
 import pers.kaoru.rfsclient.core.ClientUtils;
@@ -64,15 +67,12 @@ public class SelectActivity extends AppCompatActivity {
         port = intent.getIntExtra("port", 0);
         token = intent.getStringExtra("token");
         name = intent.getStringExtra("name");
-        getSupportActionBar().setTitle(intent.getIntExtra("title", R.string.select_location_string));
+        Objects.requireNonNull(getSupportActionBar()).setTitle(intent.getIntExtra("title", R.string.select_location_string));
 
         fileListAdapter = new FileListAdapter(this, new LinkedList<>());
         fileList.setAdapter(fileListAdapter);
-        fileList.setOnItemClickListener(this::onListItemClick);
 
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            refresh(false, "/");
-        });
+        swipeRefreshLayout.setOnRefreshListener(() -> refresh(false, "/"));
 
         refresh(false, "/");
     }
@@ -111,7 +111,9 @@ public class SelectActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void onListItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+    @SuppressLint("NonConstantResourceId")
+    @OnItemClick(R.id.selectFileList)
+    public void onListItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         FileInfo info = (FileInfo) fileListAdapter.getItem(i);
         if (info.isDirectory()) {
             onward(info.getName());

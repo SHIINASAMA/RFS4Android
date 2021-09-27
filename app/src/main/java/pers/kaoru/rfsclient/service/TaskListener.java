@@ -1,5 +1,8 @@
 package pers.kaoru.rfsclient.service;
 
+import java.io.Serializable;
+import java.util.Collection;
+
 public interface TaskListener {
 
     void onProgress(TaskRecord record, long speed);
@@ -7,8 +10,6 @@ public interface TaskListener {
     void onFailed(TaskRecord record, String error);
 
     void onPaused(TaskRecord record);
-
-    void onStart(TaskRecord record);
 
     void onResume(TaskRecord record);
 

@@ -13,4 +13,8 @@
     android:id="@+id/taskMenu"
     android:title="@string/task_view_string" />
 
+  <item
+    android:id="@+id/aboutMenu"
+    android:title="@string/about_string" />
+
 </menu>

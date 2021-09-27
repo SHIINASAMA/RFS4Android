@@ -9,7 +9,7 @@
     <string name="username_hit_string">admin</string>
     <string name="password_hit_string">Your password</string>
   <string name="login_string">Login</string>
-  <string name="about_string">About</string>
+  <string name="about_string">about</string>
   <string name="exit_again_string">Press again to exit</string>
   <string name="new_dir_string">new directory</string>
   <string name="rename_string">rename</string>
@@ -34,4 +34,13 @@
   <string name="select_move_location_string">move to ...</string>
   <string name="select_copy_location_string">copy to ...</string>
   <string name="select_location_string">select location</string>
+  <string name="file_string">files</string>
+  <string name="task_string">tasks</string>
+  <string name="no_task_string">no current task</string>
+  <string name="pause_string">pause</string>
+  <string name="resume_string">resume</string>
+  <string name="cancel_all_string">cancel all</string>
+  <string name="pause_all_string">pause all</string>
+  <string name="resume_all_string">resume all</string>
+  <string name="done_string">done</string>
 </resources>

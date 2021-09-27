@@ -1,10 +1,11 @@
 package pers.kaoru.rfsclient.service;
 
 import java.io.File;
+import java.io.Serializable;
 
 import pers.kaoru.rfsclient.core.MD5Utils;
 
-public class TaskRecord {
+public class TaskRecord implements Serializable {
 
     private final String host;
     private transient int port;
@@ -20,6 +21,7 @@ public class TaskRecord {
 
     private final long createTime;
     private String uid;
+    private transient long speed = 0;
 
     public TaskRecord(String host, int port, String token, String remoteUrl, String localUrl, TaskType type) {
         this.host = host;
@@ -34,6 +36,14 @@ public class TaskRecord {
         } else {
             this.name = new File(localUrl).getName();
         }
+    }
+
+    public long getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(long speed) {
+        this.speed = speed;
     }
 
     public String getUid() {
@@ -87,7 +97,7 @@ public class TaskRecord {
         this.current = current;
     }
 
-    public void setLength(long length){
+    public void setLength(long length) {
         this.length = length;
     }
 

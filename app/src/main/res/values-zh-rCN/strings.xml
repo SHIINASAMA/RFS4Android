@@ -33,4 +33,13 @@
   <string name="select_move_location_string">移动至...</string>
   <string name="select_copy_location_string">复制至...</string>
   <string name="select_location_string">选择位置</string>
+  <string name="file_string">文件</string>
+  <string name="task_string">任务</string>
+  <string name="no_task_string">当前没有任务</string>
+  <string name="pause_string">暂停</string>
+  <string name="resume_string">恢复</string>
+  <string name="cancel_all_string">全部取消</string>
+  <string name="pause_all_string">全部暂停</string>
+  <string name="resume_all_string">全部恢复</string>
+  <string name="done_string">完成</string>
 </resources>
