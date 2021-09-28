@@ -133,6 +133,9 @@ public class MyService extends Service {
             }
             case ACTION_PAUSE_ALL: {
                 TaskDispatcher.get().pauseAll();
+                Intent i = new Intent();
+                i.setAction(ACTION_PAUSE_ALL);
+                sendBroadcast(i);
                 break;
             }
             case ACTION_RESUME: {
@@ -142,6 +145,9 @@ public class MyService extends Service {
             }
             case ACTION_RESUME_ALL: {
                 TaskDispatcher.get().resumeAll();
+                Intent i = new Intent();
+                i.setAction(ACTION_RESUME_ALL);
+                sendBroadcast(i);
                 break;
             }
             case ACTION_CANCEL: {
@@ -151,6 +157,9 @@ public class MyService extends Service {
             }
             case ACTION_CANCEL_ALL: {
                 TaskDispatcher.get().cancelAll();
+                Intent i = new Intent();
+                i.setAction(ACTION_CANCEL_ALL);
+                sendBroadcast(i);
                 break;
             }
         }

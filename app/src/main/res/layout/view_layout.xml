@@ -18,7 +18,8 @@
   <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
     android:id="@+id/swipeRefresh"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true">
 
     <ListView
       android:id="@+id/fileList"

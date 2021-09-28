@@ -8,6 +8,9 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
@@ -18,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.Collection;
@@ -34,7 +36,6 @@ import pers.kaoru.rfsclient.service.Task;
 import pers.kaoru.rfsclient.service.TaskDispatcher;
 import pers.kaoru.rfsclient.service.TaskRecord;
 import pers.kaoru.rfsclient.service.TaskState;
-import pers.kaoru.rfsclient.service.TaskType;
 
 public class TaskActivity extends AppCompatActivity {
 
@@ -90,10 +91,34 @@ public class TaskActivity extends AppCompatActivity {
                     TaskItem item = taskListAdapter.getTaskView(taskId);
                     item.getRecord().setSpeed(0);
                     item.setState(TaskState.PAUSED);
+                    TaskDispatcher.get().remove(taskId);
+                    Toast.makeText(getApplicationContext(), item.getRecord().getName() + " " + getResources().getString(R.string.failed_string), Toast.LENGTH_LONG).show();
                 } else if (intent.getAction().equals(MyService.ACTION_RESUME)) {
                     String taskId = intent.getStringExtra("id");
                     TaskItem item = taskListAdapter.getTaskView(taskId);
                     item.setState(TaskState.RUNNING);
+                } else if (intent.getAction().equals(MyService.ACTION_PAUSE_ALL)) {
+                    for (TaskItem item : taskListAdapter.getTaskItemHashMap().values()) {
+                        if (item.getTaskState().getText().equals(TaskState.RUNNING.name())) {
+                            item.setState(TaskState.PAUSED);
+                            item.getRecord().setSpeed(0);
+                        }
+                    }
+                } else if (intent.getAction().equals(MyService.ACTION_RESUME_ALL)) {
+                    for (TaskItem item : taskListAdapter.getTaskItemHashMap().values()) {
+                        if (item.getTaskState().getText().equals(TaskState.PAUSED.name())) {
+                            item.setState(TaskState.RUNNING);
+                        }
+                    }
+                } else if (intent.getAction().equals(MyService.ACTION_CANCEL_ALL)) {
+                    for (TaskItem item : taskListAdapter.getTaskItemHashMap().values()) {
+                        String stateStr = item.getTaskState().getText().toString();
+                        if (stateStr.equals(TaskState.PAUSED.name()) || stateStr.equals(TaskState.RUNNING.name())) {
+                            item.setState(TaskState.CANCELED);
+                            item.getRecord().setSpeed(0);
+
+                        }
+                    }
                 }
                 taskListAdapter.notifyDataSetChanged();
             }
@@ -129,6 +154,11 @@ public class TaskActivity extends AppCompatActivity {
                 }
                 taskRecords.push(task.getRecord());
             }
+
+            Animation animation = AnimationUtils.loadAnimation(TaskActivity.this, R.anim.item_slide_down);
+            LayoutAnimationController controller = new LayoutAnimationController(animation);
+            taskList.setLayoutAnimation(controller);
+
             taskListAdapter.reset(taskRecords);
             noTaskText.setVisibility(View.INVISIBLE);
         }

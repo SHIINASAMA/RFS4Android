@@ -1,18 +1,17 @@
 package pers.kaoru.rfsclient.ui;
 
-import static android.content.Intent.*;
-
 import android.annotation.SuppressLint;
-import android.app.ActivityManager;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -28,12 +27,14 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnItemClick;
 import butterknife.OnItemLongClick;
 import butterknife.Unbinder;
+import me.rosuh.filepicker.config.FilePickerManager;
 import pers.kaoru.rfsclient.R;
 import pers.kaoru.rfsclient.core.ClientUtils;
 import pers.kaoru.rfsclient.core.FileInfo;
@@ -50,6 +51,7 @@ public class ViewActivity extends AppCompatActivity {
 
     public static final int REQUEST_CODE_MOVE = 100;
     public static final int REQUEST_CODE_COPY = 200;
+    public static final int REQUEST_CODE_UPLOAD = 300;
 
     private String host;
     private int port;
@@ -174,6 +176,10 @@ public class ViewActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             }
+            case R.id.uploadMenu: {
+                FilePickerManager.from(this).enableSingleChoice().forResult(REQUEST_CODE_UPLOAD);
+                break;
+            }
             default:
                 break;
         }
@@ -294,13 +300,13 @@ public class ViewActivity extends AppCompatActivity {
                     startActivityForResult(intent, REQUEST_CODE_COPY);
                     break;
                 }
-                case R.id.downloadMenu:{
-                    if(info.isDirectory()){
-                       break;
+                case R.id.downloadMenu: {
+                    if (info.isDirectory()) {
+                        break;
                     }
 
                     File file = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-                    TaskRecord record = new TaskRecord(host,port,token,router + info.getName(), file.getAbsolutePath(), TaskType.DOWNLOAD);
+                    TaskRecord record = new TaskRecord(host, port, token, router + info.getName(), file.getAbsolutePath(), TaskType.DOWNLOAD);
                     TaskDispatcher.get().add(new Task(record));
                     break;
                 }
@@ -378,6 +384,11 @@ public class ViewActivity extends AppCompatActivity {
                     }
                 }
             }.execute();
+        } else if (requestCode == REQUEST_CODE_UPLOAD && resultCode == RESULT_OK) {
+            List<String> path = FilePickerManager.obtainData();
+            String remoteUrl = router + (new File(path.get(0)).getName());
+            TaskRecord record = new TaskRecord(host, port, token, remoteUrl, path.get(0), TaskType.UPLOAD);
+            TaskDispatcher.get().add(new Task(record));
         }
     }
 
@@ -436,8 +447,13 @@ public class ViewActivity extends AppCompatActivity {
                     }
 
                     LinkedList<FileInfo> fileInfoList = FileInfo.FileInfoBuild(response.getHeader("list"));
-                    fileListAdapter.reset(fileInfoList);
                     pathText.setText(router.toString());
+
+                    Animation animation = AnimationUtils.loadAnimation(ViewActivity.this, R.anim.item_slide_down);
+                    LayoutAnimationController controller = new LayoutAnimationController(animation);
+                    fileList.setLayoutAnimation(controller);
+
+                    fileListAdapter.reset(fileInfoList);
                     fileListAdapter.notifyDataSetChanged();
                 }
                 isRefresh = false;

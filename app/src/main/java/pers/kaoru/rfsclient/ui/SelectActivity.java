@@ -8,6 +8,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -171,6 +174,11 @@ public class SelectActivity extends AppCompatActivity {
                     }
 
                     LinkedList<FileInfo> fileInfoList = FileInfo.FileInfoBuild(response.getHeader("list"));
+
+                    Animation animation = AnimationUtils.loadAnimation(SelectActivity.this, R.anim.item_slide_down);
+                    LayoutAnimationController controller = new LayoutAnimationController(animation);
+                    fileList.setLayoutAnimation(controller);
+
                     fileListAdapter.reset(fileInfoList);
                     pathText.setText(router.toString());
                     fileListAdapter.notifyDataSetChanged();

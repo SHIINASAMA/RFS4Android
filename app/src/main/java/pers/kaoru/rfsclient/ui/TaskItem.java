@@ -63,7 +63,11 @@ public class TaskItem {
     }
 
     public void updateState() {
-        this.taskState.setText(TaskDispatcher.get().getState(record.getUid()).name());
+        TaskState state = TaskDispatcher.get().getState(record.getUid());
+        if(state == null){
+            state = TaskState.RUNNING;
+        }
+        this.taskState.setText(state.name());
     }
 
     public TextView getTaskName() {
