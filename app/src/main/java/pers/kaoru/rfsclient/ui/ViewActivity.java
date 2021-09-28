@@ -306,7 +306,7 @@ public class ViewActivity extends AppCompatActivity {
                     }
 
                     File file = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-                    TaskRecord record = new TaskRecord(host, port, token, router + info.getName(), file.getAbsolutePath(), TaskType.DOWNLOAD);
+                    TaskRecord record = new TaskRecord(host, port, token, router + info.getName(), file.getPath(), TaskType.DOWNLOAD);
                     TaskDispatcher.get().add(new Task(record));
                     break;
                 }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,7 +17,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 
 import butterknife.BindView;
 import butterknife.BindViews;
@@ -55,11 +65,44 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.login_layout);
         unbinder = ButterKnife.bind(this);
 
-        // 测试用
-        setHost("192.168.3.2");
-        setPort(8080);
-        setName("root");
-        setPassword("123");
+        load();
+//        setPassword("123");
+    }
+
+    private void load() {
+        LoginInfo info = null;
+        File file = new File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "login.data");
+        try {
+            InputStream inputStream = new FileInputStream(file);
+            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+            info = (LoginInfo) objectInputStream.readObject();
+            objectInputStream.close();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (info != null) {
+            setHost(info.host);
+            setPort(info.port);
+            setName(info.userName);
+        }
+    }
+
+    private void save() {
+        LoginInfo info = new LoginInfo();
+        info.host = getHost();
+        info.port = getPort();
+        info.userName = getName();
+
+        File file = new File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "login.data");
+        try{
+            OutputStream outputStream = new FileOutputStream(file, false);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+            objectOutputStream.writeObject(info);
+            objectOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -84,6 +127,7 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @OnClick(R.id.loginButton)
     public void onLogin() {
         String host = getHost();
@@ -129,6 +173,7 @@ public class LoginActivity extends AppCompatActivity {
                     bundle.putString("token", response.getHeader("token"));
                     intent.putExtras(bundle);
                     startActivity(intent);
+                    save();
                     finish();
                 } else {
                     Toast.makeText(LoginActivity.this, response.getHeader("error"), Toast.LENGTH_LONG).show();
@@ -181,4 +226,10 @@ public class LoginActivity extends AppCompatActivity {
         pwdTextBox.setEnabled(isEnable);
         loginButton.setEnabled(isEnable);
     }
+}
+
+class LoginInfo implements Serializable {
+    public String host;
+    public int port;
+    public String userName;
 }

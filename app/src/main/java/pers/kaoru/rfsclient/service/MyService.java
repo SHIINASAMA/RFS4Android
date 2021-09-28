@@ -1,6 +1,10 @@
 package pers.kaoru.rfsclient.service;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -8,7 +12,6 @@ import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,6 +23,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.LinkedList;
+
+import pers.kaoru.rfsclient.R;
 
 public class MyService extends Service {
 
@@ -33,6 +38,10 @@ public class MyService extends Service {
     public static final String ACTION_UPDATE = "ACTION_UPDATE";
     public static final String ACTION_FAIL = "ACTION_FAIL";
     public static final String ACTION_FINISH = "ACTION_FINISH";
+
+    private static final String NOTIFICATION_ID = "RFS4Android";
+    private static final String NOTIFICATION_NAME = "MyService";
+    private NotificationManager notifyManager;
 
     private final TaskListener listener = new TaskListener() {
         @Override
@@ -51,6 +60,13 @@ public class MyService extends Service {
             intent.putExtra("id", record.getUid());
             intent.putExtra("error", error);
             sendBroadcast(intent);
+            Notification notification = new Notification( );
+            notification = new Notification.Builder(MyService.this, NOTIFICATION_ID)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle(getString(R.string.task_string))
+                    .setContentText( record.getName() + " " +getString(R.string.failed_string))
+                    .build();
+            notifyManager.notify(0, notification);
         }
 
         @Override
@@ -75,6 +91,12 @@ public class MyService extends Service {
             intent.setAction(ACTION_FINISH);
             intent.putExtra("id", record.getUid());
             sendBroadcast(intent);
+            Notification notification = new Notification.Builder(MyService.this, NOTIFICATION_ID)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle(getString(R.string.task_string))
+                    .setContentText( record.getName() + " " +getString(R.string.finished_string))
+                    .build();
+            notifyManager.notify(0, notification);
         }
 
         @Override
@@ -87,6 +109,14 @@ public class MyService extends Service {
     };
 
     private final LinkedList<TaskRecord> otherTasks = new LinkedList<>();
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        NotificationChannel channel = new NotificationChannel(NOTIFICATION_ID, NOTIFICATION_NAME, NotificationManager.IMPORTANCE_LOW);
+        notifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notifyManager.createNotificationChannel(channel);
+    }
 
     @Nullable
     @Override
@@ -169,6 +199,7 @@ public class MyService extends Service {
     @Override
     public void onDestroy() {
         TaskDispatcher.get().quit();
+        TaskDispatcher.get().refresh();
         Collection<Task> tasks = TaskDispatcher.get().getTasks();
         for (Task task : tasks) {
             otherTasks.add(task.getRecord());

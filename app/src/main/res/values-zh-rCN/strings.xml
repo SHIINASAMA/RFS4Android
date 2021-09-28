@@ -43,4 +43,8 @@
   <string name="resume_all_string">全部恢复</string>
   <string name="done_string">完成</string>
   <string name="failed_string">失败</string>
+  <string name="transfer_string">传输</string>
+  <string name="succeeded_string">成功</string>
+  <string name="finished_string">已完成</string>
+  <string name="canceled_string">已取消</string>
 </resources>

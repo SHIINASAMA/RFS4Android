@@ -151,6 +151,7 @@ public class TaskDispatcher extends Thread {
     }
 
     public void onFailed(TaskRecord record, String error) {
+        permit.release();
         listener.onFailed(record, error);
     }
 
@@ -163,10 +164,12 @@ public class TaskDispatcher extends Thread {
     }
 
     public void onFinish(TaskRecord record) {
+        permit.release();
         listener.onFinish(record);
     }
 
     public void onCanceled(TaskRecord record) {
+        permit.release();
         listener.onCanceled(record);
     }
 
@@ -176,5 +179,13 @@ public class TaskDispatcher extends Thread {
 
     public void remove(String taskId) {
         taskHashMap.remove(taskId);
+    }
+
+    public void refresh() {
+        for (Task task : taskHashMap.values()) {
+            if (task.getState() == TaskState.FINISH || task.getState() == TaskState.FAILED || task.getState() == TaskState.CANCELED) {
+                taskHashMap.remove(task.getRecord().getUid());
+            }
+        }
     }
 }

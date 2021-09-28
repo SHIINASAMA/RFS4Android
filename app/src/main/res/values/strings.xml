@@ -44,4 +44,8 @@
   <string name="resume_all_string">resume all</string>
   <string name="done_string">done</string>
   <string name="failed_string">failed</string>
+  <string name="transfer_string">transfer</string>
+  <string name="succeeded_string">succeeded</string>
+  <string name="finished_string">finished</string>
+  <string name="canceled_string">canceled</string>
 </resources>

@@ -66,10 +66,12 @@ public class TaskActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(R.string.task_view_string);
 
-
         initBroadcastReceiver();
 
-        swipeRefreshLayout.setOnRefreshListener(this::refresh);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            TaskDispatcher.get().refresh();
+            refresh();
+        });
         taskListAdapter = new TaskListAdapter(TaskActivity.this, new LinkedList<>());
         refresh();
         taskList.setAdapter(taskListAdapter);
@@ -84,15 +86,12 @@ public class TaskActivity extends AppCompatActivity {
                     TaskItem item = taskListAdapter.getTaskView(taskId);
                     item.getRecord().setSpeed(0);
                     item.setState(TaskState.FINISH);
-                    TaskDispatcher.get().remove(taskId);
-                    Toast.makeText(getApplicationContext(), item.getRecord().getName() + " " + getResources().getString(R.string.done_string), Toast.LENGTH_LONG).show();
+                    item.updateProgress();
                 } else if (intent.getAction().equals(MyService.ACTION_PAUSE)) {
                     String taskId = intent.getStringExtra("id");
                     TaskItem item = taskListAdapter.getTaskView(taskId);
                     item.getRecord().setSpeed(0);
                     item.setState(TaskState.PAUSED);
-                    TaskDispatcher.get().remove(taskId);
-                    Toast.makeText(getApplicationContext(), item.getRecord().getName() + " " + getResources().getString(R.string.failed_string), Toast.LENGTH_LONG).show();
                 } else if (intent.getAction().equals(MyService.ACTION_RESUME)) {
                     String taskId = intent.getStringExtra("id");
                     TaskItem item = taskListAdapter.getTaskView(taskId);
@@ -146,22 +145,19 @@ public class TaskActivity extends AppCompatActivity {
 
         if (tasks.isEmpty()) {
             noTaskText.setVisibility(View.VISIBLE);
+            taskList.setVisibility(View.INVISIBLE);
         } else {
             for (Task task : tasks) {
-                if (task.getState() == TaskState.FAILED || task.getState() == TaskState.CANCELED || task.getState() == TaskState.FINISH) {
-                    TaskDispatcher.get().remove(task.getRecord().getUid());
-                    continue;
-                }
                 taskRecords.push(task.getRecord());
             }
-
-            Animation animation = AnimationUtils.loadAnimation(TaskActivity.this, R.anim.item_slide_down);
-            LayoutAnimationController controller = new LayoutAnimationController(animation);
-            taskList.setLayoutAnimation(controller);
-
-            taskListAdapter.reset(taskRecords);
             noTaskText.setVisibility(View.INVISIBLE);
+            taskList.setVisibility(View.VISIBLE);
         }
+
+        Animation animation = AnimationUtils.loadAnimation(TaskActivity.this, R.anim.item_slide_down);
+        LayoutAnimationController controller = new LayoutAnimationController(animation);
+        taskList.setLayoutAnimation(controller);
+        taskListAdapter.reset(taskRecords);
         this.swipeRefreshLayout.setRefreshing(false);
     }
 

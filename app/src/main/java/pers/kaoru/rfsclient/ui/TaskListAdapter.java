@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import pers.kaoru.rfsclient.R;
-import pers.kaoru.rfsclient.core.BitCount;
 import pers.kaoru.rfsclient.service.TaskRecord;
 
 public class TaskListAdapter extends BaseAdapter {
@@ -62,7 +61,7 @@ public class TaskListAdapter extends BaseAdapter {
         TaskItem item = new TaskItem(name, progress, state, fraction, speed, type, record);
         item.setName(record.getName());
         item.updateType();
-        item.setProgress();
+        item.updateProgress();
         item.updateSpeed();
         item.updateState();
 

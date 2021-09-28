@@ -48,7 +48,7 @@ public class TaskItem {
     }
 
     @SuppressLint("SetTextI18n")
-    public void setProgress() {
+    public void updateProgress() {
         int v = (int) ((float) record.getCurrent() / record.getLength() * 100);
         taskProgress.setProgress(v);
         taskFraction.setText(BitCount.ToString(record.getCurrent()) + " / " + BitCount.ToString(record.getLength()));
