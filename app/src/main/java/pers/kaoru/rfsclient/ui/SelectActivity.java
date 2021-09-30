@@ -14,6 +14,7 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -182,6 +183,8 @@ public class SelectActivity extends AppCompatActivity {
                     fileListAdapter.reset(fileInfoList);
                     pathText.setText(router.toString());
                     fileListAdapter.notifyDataSetChanged();
+                }else{
+                    Toast.makeText(SelectActivity.this, response.getHeader("error"), Toast.LENGTH_SHORT).show();
                 }
                 isRefresh = false;
                 swipeRefreshLayout.setRefreshing(false);

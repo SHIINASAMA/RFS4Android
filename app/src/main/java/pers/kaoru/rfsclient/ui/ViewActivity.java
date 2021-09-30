@@ -455,6 +455,8 @@ public class ViewActivity extends AppCompatActivity {
 
                     fileListAdapter.reset(fileInfoList);
                     fileListAdapter.notifyDataSetChanged();
+                }else{
+                    Toast.makeText(ViewActivity.this, response.getHeader("error"), Toast.LENGTH_SHORT).show();
                 }
                 isRefresh = false;
                 swipeRefreshLayout.setRefreshing(false);

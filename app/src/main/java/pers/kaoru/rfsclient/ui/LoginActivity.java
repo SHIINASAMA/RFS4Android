@@ -178,9 +178,9 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(LoginActivity.this, response.getHeader("error"), Toast.LENGTH_LONG).show();
                 }
+                setAllEnabled(true);
             }
         }.execute();
-        setAllEnabled(true);
     }
 
     private String getHost() {
